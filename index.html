@@ -1,0 +1,1381 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>NeoTax - Sistema Integral</title>
+    <style>
+        /* Reset y base */
+        * { 
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            color: #222;
+        }
+        
+        /* Layout principal */
+        #appContainer {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100vw;
+        }
+        
+        /* Barra de navegación superior */
+        #navBar {
+            background: #0f4c81;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 100;
+        }
+        
+        #navTitle {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        
+        #navButtons {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .nav-button {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        
+        .nav-button:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .nav-button.logout {
+            background: #b22;
+        }
+        
+        .nav-button.logout:hover {
+            background: #a11;
+        }
+        
+        /* Contenido principal */
+        #mainContent {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            background: white;
+        }
+        
+        /* Login Container */
+        #loginContainer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+            background: #f5f7fa;
+        }
+        
+        .auth-box {
+            background: white;
+            width: 400px;
+            max-width: 90vw;
+            padding: 2rem 2.5rem;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        
+        /* Estilos comunes para forms */
+        h1, h2, h3 {
+            color: #0f4c81;
+            margin-bottom: 1.5rem;
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        
+        h2 {
+            font-size: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        h3 {
+            font-size: 1.2rem;
+            margin-top: 1rem;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 0.7rem 0.9rem;
+            border: 1.8px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #0f4c81;
+            box-shadow: 0 0 8px #0f4c81aa;
+        }
+        
+        button {
+            background: #0f4c81;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+            margin-top: 1.5rem;
+        }
+        
+        button:hover {
+            background: #093251;
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .link-button {
+            background: none;
+            color: #0f4c81;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: underline;
+            padding: 0;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            display: inline-block;
+        }
+        
+        .link-button:hover {
+            color: #093251;
+        }
+        
+        /* Mensajes */
+        .message {
+            margin-top: 1rem;
+            padding: 0.8rem;
+            border-radius: 5px;
+            font-weight: 500;
+        }
+        
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
+        }
+        
+        .success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+        }
+        
+        /* Secciones del dashboard */
+        .section {
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .section:last-child {
+            border-bottom: none;
+        }
+        
+        /* Formularios flex */
+        .form-row {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+        
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        /* Tablas */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background: #e3eaf1;
+            font-weight: 600;
+            color: #0f4c81;
+        }
+        
+        tr:hover {
+            background: #f5f9ff;
+        }
+        
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Welcome message */
+        .welcome-message {
+            background: #e3f2fd;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 5px solid #0f4c81;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .form-group {
+                width: 100%;
+            }
+            
+            #navButtons {
+                gap: 0.5rem;
+            }
+            
+            .nav-button {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="appContainer">
+        <!-- Barra de navegación (visible solo después de login) -->
+        <div id="navBar" style="display: none;">
+            <div id="navTitle">NeoTax</div>
+            <div id="navButtons">
+                <button class="nav-button" id="btnEmpresas" onclick="showSection('empresas')">Empresas Registradas</button>
+                <button class="nav-button" id="btnAgregarEmpresa" onclick="showSection('agregarEmpresa')">Agregar Empresa</button>
+                <button class="nav-button" id="btnFacturas" onclick="showSection('facturas')">Generar Factura</button>
+                <button class="nav-button" id="btnHistorial" onclick="showSection('historial')">Historial Facturas</button>
+                <button class="nav-button" id="btnICA" onclick="showSection('ica')">Total ICA a Pagar</button>
+                <button class="nav-button logout" onclick="logout()">Cerrar Sesión</button>
+            </div>
+        </div>
+        
+        <!-- Contenido principal -->
+        <div id="mainContent">
+            <!-- Login Container -->
+            <div id="loginContainer">
+                <div class="auth-box">
+                    <h1>NeoTax</h1>
+                    <div id="loginForm">
+                        <h2>Iniciar Sesión</h2>
+                        <label for="loginUser">Usuario</label>
+                        <input id="loginUser" type="text" autocomplete="username" />
+                        <label for="loginPass">Contraseña</label>
+                        <input id="loginPass" type="password" autocomplete="current-password" />
+                        <button onclick="login()">Entrar</button>
+                        <button class="link-button" onclick="showRegister()">¿No tienes cuenta? Regístrate</button>
+                        <div id="loginMsg" class="message" style="display: none;"></div>
+                    </div>
+                    
+                    <div id="registerForm" style="display:none;">
+                        <h2>Registro</h2>
+                        <label for="regUser">Usuario</label>
+                        <input id="regUser" type="text" autocomplete="username" />
+                        <label for="regPass">Contraseña</label>
+                        <input id="regPass" type="password" autocomplete="new-password" />
+                        <label for="regRole">Rol</label>
+                        <select id="regRole">
+                            <option value="invitado">Invitado</option>
+                            <option value="auxiliar">Auxiliar Contable</option>
+                            <option value="contador">Contador</option>
+                            <option value="revisor">Revisor Fiscal</option>
+                        </select>
+                        <button onclick="register()">Registrar</button>
+                        <button class="link-button" onclick="showLogin()">¿Ya tienes cuenta? Inicia sesión</button>
+                        <div id="registerMsg" class="message" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Dashboard Sections (hidden initially) -->
+            <div id="dashboardContent" style="display: none;">
+                <!-- Welcome Section -->
+                <div id="welcomeSection" class="section">
+                    <div class="welcome-message">
+                        <h2>Bienvenido al Sistema Contable Integral</h2>
+                        <p id="welcomeText">Estamos encantados de tenerte aquí. Selecciona una opción del menú superior para comenzar.</p>
+                    </div>
+                </div>
+                
+                <!-- Agregar Empresa Section -->
+                <div id="agregarEmpresaSection" class="section" style="display: none;">
+                    <h2>Agregar Nueva Empresa</h2>
+                    <div class="card">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="nombreEmpresa">Nombre de la Empresa</label>
+                                <input type="text" id="nombreEmpresa" placeholder="Ej: XYZ S.A.S" />
+                            </div>
+                            <div class="form-group">
+                                <label for="nitEmpresa">NIT</label>
+                                <input type="text" id="nitEmpresa" placeholder="Ej: 900123456-7" />
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="ciudadEmpresa">Ciudad</label>
+                                <select id="ciudadEmpresa">
+                                    <option value="" disabled selected>Seleccione ciudad</option>
+                                    <option value="Barranquilla">Barranquilla</option>
+                                    <option value="Medellín">Medellín</option>
+                                    <option value="Cali">Cali</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="actividadEmpresa">Actividad económica</label>
+                                <select id="actividadEmpresa">
+                                    <option value="" disabled selected>Seleccione actividad</option>
+                                    <option value="Comercio">Comercio</option>
+                                    <option value="Servicios">Servicios</option>
+                                    <option value="Industria">Industria</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="regimenEmpresa">Régimen Tributario</label>
+                                <select id="regimenEmpresa">
+                                    <option value="" disabled selected>Seleccione régimen</option>
+                                    <option value="General">General</option>
+                                    <option value="Simplificado">Simplificado</option>
+                                    <option value="Especial">Especial</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="direccionEmpresa">Dirección</label>
+                                <input type="text" id="direccionEmpresa" placeholder="Dirección completa" />
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="tarifaNacional">Tarifa Impuestos Nacionales (%)</label>
+                                <input type="number" id="tarifaNacional" min="0" max="100" step="0.1" value="19" />
+                            </div>
+                            <div class="form-group">
+                                <label for="tarifaTerritorial">Tarifa Impuestos Territoriales (%)</label>
+                                <input type="number" id="tarifaTerritorial" min="0" max="100" step="0.1" value="10" />
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="retenciones">Retenciones (%)</label>
+                                <input type="number" id="retenciones" min="0" max="100" step="0.1" value="3.5" />
+                            </div>
+                            <div class="form-group">
+                                <label for="autoretenciones">Autoretenciones (%)</label>
+                                <input type="number" id="autoretenciones" min="0" max="100" step="0.1" value="1" />
+                            </div>
+                        </div>
+                        
+                        <button onclick="agregarEmpresa()">Guardar Empresa</button>
+                        <div id="empresaMsg" class="message" style="display: none;"></div>
+                    </div>
+                </div>
+                
+                <!-- Empresas Registradas Section -->
+                <div id="empresasSection" class="section" style="display: none;">
+                    <h2>Empresas Registradas</h2>
+                    <div class="card">
+                        <table id="empresasTable">
+                            <thead>
+                                <tr>
+                                    <th>NIT</th>
+                                    <th>Nombre</th>
+                                    <th>Ciudad</th>
+                                    <th>Actividad</th>
+                                    <th>Régimen</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Generar Factura Section -->
+                <div id="facturasSection" class="section" style="display: none;">
+                    <h2>Generar Factura</h2>
+                    <div class="card">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="empresaFactura">Seleccione Empresa</label>
+                                <select id="empresaFactura">
+                                    <option value="" disabled selected>-- Seleccione una empresa --</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="valorVenta">Valor de la venta o servicio (COP)</label>
+                                <input type="number" id="valorVenta" placeholder="Ej: 1000000" min="1" />
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="conceptoFactura">Concepto</label>
+                                <input type="text" id="conceptoFactura" placeholder="Descripción del producto/servicio" />
+                            </div>
+                        </div>
+                        
+                        <button onclick="generarFactura()">Generar Factura</button>
+                        <div id="facturaResult" class="card" style="margin-top: 1.5rem; display: none;"></div>
+                    </div>
+                </div>
+                
+                <!-- Historial Facturas Section -->
+                <div id="historialSection" class="section" style="display: none;">
+                    <h2>Historial de Facturas</h2>
+                    <div class="card">
+                        <table id="historialTable">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Empresa</th>
+                                    <th>Ciudad</th>
+                                    <th>Valor</th>
+                                    <th>Total</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Detalle Factura Modal -->
+                <div id="facturaModal" class="modal" style="display: none;">
+                    <div class="modal-content">
+                        <span class="close" onclick="closeModal()">&times;</span>
+                        <div id="facturaDetail"></div>
+                    </div>
+                </div>
+                
+                <!-- Total ICA Section -->
+                <div id="icaSection" class="section" style="display: none;">
+                    <h2>Total ICA a Pagar por Ciudad</h2>
+                    <div class="card">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="selectCiudadICA">Seleccione Ciudad</label>
+                                <select id="selectCiudadICA">
+                                    <option value="" disabled selected>-- Seleccione ciudad --</option>
+                                    <option value="Barranquilla">Barranquilla</option>
+                                    <option value="Medellín">Medellín</option>
+                                    <option value="Cali">Cali</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div id="icaResult" style="margin-top: 1.5rem;">
+                            <h3>Resultados para: <span id="ciudadSeleccionada"></span></h3>
+                            <div id="icaEmpresas"></div>
+                            <div id="icaFacturas"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Datos iniciales
+        let users = JSON.parse(localStorage.getItem('contable_users')) || [];
+        let empresas = JSON.parse(localStorage.getItem('contable_empresas')) || [];
+        let facturas = JSON.parse(localStorage.getItem('contable_facturas')) || [];
+        let currentUser = null;
+        
+        // Tarifas ICA por ciudad y actividad (ejemplo)
+        const tarifasICA = {
+            "Barranquilla": {
+                "Comercio": 0.5,
+                "Servicios": 0.7,
+                "Industria": 0.6
+            },
+            "Medellín": {
+                "Comercio": 0.6,
+                "Servicios": 0.8,
+                "Industria": 0.7
+            },
+            "Cali": {
+                "Comercio": 0.4,
+                "Servicios": 0.6,
+                "Industria": 0.5
+            }
+        };
+        
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            showLogin();
+            
+            // Agregar algunos usuarios de ejemplo si no existen
+            if (users.length === 0) {
+                users = [
+                    { user: "admin", pass: "admin123", role: "contador" },
+                    { user: "auxiliar", pass: "aux123", role: "auxiliar" },
+                    { user: "invitado", pass: "invitado123", role: "invitado" },
+                    { user: "revisor", pass: "revisor123", role: "revisor" }
+                ];
+                localStorage.setItem('contable_users', JSON.stringify(users));
+            }
+            
+            // Agregar algunas empresas de ejemplo si no existen
+            if (empresas.length === 0) {
+                empresas = [
+                    {
+                        nit: "900123456-7",
+                        nombre: "Empresa Ejemplo SAS",
+                        ciudad: "Barranquilla",
+                        actividad: "Comercio",
+                        regimen: "General",
+                        direccion: "Calle 123 #45-67",
+                        tarifaNacional: 19,
+                        tarifaTerritorial: 10,
+                        retenciones: 3.5,
+                        autoretenciones: 1
+                    }
+                ];
+                localStorage.setItem('contable_empresas', JSON.stringify(empresas));
+            }
+        });
+        
+        // Funciones de autenticación
+        function showLogin() {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('registerForm').style.display = 'none';
+            hideMessage('loginMsg');
+            hideMessage('registerMsg');
+        }
+        
+        function showRegister() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+            hideMessage('loginMsg');
+            hideMessage('registerMsg');
+        }
+        
+        function showMessage(elementId, message, isError = true) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = isError ? 'message error' : 'message success';
+            element.style.display = 'block';
+        }
+        
+        function hideMessage(elementId) {
+            document.getElementById(elementId).style.display = 'none';
+        }
+        
+        function register() {
+            const user = document.getElementById('regUser').value.trim();
+            const pass = document.getElementById('regPass').value.trim();
+            const role = document.getElementById('regRole').value;
+            
+            if (!user || !pass) {
+                showMessage('registerMsg', 'Por favor complete todos los campos');
+                return;
+            }
+            
+            if (users.find(u => u.user === user)) {
+                showMessage('registerMsg', 'El usuario ya existe');
+                return;
+            }
+            
+            users.push({ user, pass, role });
+            localStorage.setItem('contable_users', JSON.stringify(users));
+            
+            showMessage('registerMsg', 'Registro exitoso! Ahora inicie sesión.', false);
+            setTimeout(showLogin, 2000);
+        }
+        
+        function login() {
+            const user = document.getElementById('loginUser').value.trim();
+            const pass = document.getElementById('loginPass').value.trim();
+            
+            const foundUser = users.find(u => u.user === user && u.pass === pass);
+            
+            if (!foundUser) {
+                showMessage('loginMsg', 'Usuario o contraseña incorrectos');
+                return;
+            }
+            
+            currentUser = foundUser;
+            iniciarSesion();
+        }
+        
+        function logout() {
+            currentUser = null;
+            document.getElementById('loginContainer').style.display = 'flex';
+            document.getElementById('dashboardContent').style.display = 'none';
+            document.getElementById('navBar').style.display = 'none';
+            document.getElementById('loginUser').value = '';
+            document.getElementById('loginPass').value = '';
+            hideMessage('loginMsg');
+        }
+        
+        // Funciones del dashboard
+        function iniciarSesion() {
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('dashboardContent').style.display = 'block';
+            document.getElementById('navBar').style.display = 'flex';
+            
+            // Mostrar mensaje de bienvenida personalizado
+            const welcomeText = document.getElementById('welcomeText');
+            let roleName = '';
+            switch(currentUser.role) {
+                case 'contador': roleName = 'Contador'; break;
+                case 'revisor': roleName = 'Revisor Fiscal'; break;
+                case 'auxiliar': roleName = 'Auxiliar Contable'; break;
+                case 'invitado': roleName = 'Invitado'; break;
+                default: roleName = 'Usuario';
+            }
+            welcomeText.textContent = `Bienvenido ${currentUser.user} (${roleName}). Utiliza el menú superior para navegar por el sistema.`;
+            
+            // Configurar permisos según rol
+            setupPermissions();
+            
+            // Cargar datos iniciales
+            cargarEmpresasParaFactura();
+            cargarTablaEmpresas();
+            cargarHistorialFacturas();
+            
+            // Mostrar sección de bienvenida por defecto
+            showSection('welcome');
+        }
+        
+        function setupPermissions() {
+            // Mostrar/ocultar botones según rol
+            const btnAgregarEmpresa = document.getElementById('btnAgregarEmpresa');
+            const btnFacturas = document.getElementById('btnFacturas');
+            
+            // Contador y Revisor Fiscal tienen acceso completo
+            if (currentUser.role === 'contador' || currentUser.role === 'revisor') {
+                btnAgregarEmpresa.style.display = 'block';
+                btnFacturas.style.display = 'block';
+            } 
+            // Auxiliar contable puede generar facturas pero no agregar empresas
+            else if (currentUser.role === 'auxiliar') {
+                btnAgregarEmpresa.style.display = 'none';
+                btnFacturas.style.display = 'block';
+            } 
+            // Invitado solo puede ver
+            else {
+                btnAgregarEmpresa.style.display = 'none';
+                btnFacturas.style.display = 'none';
+            }
+        }
+        
+        function showSection(sectionId) {
+            // Ocultar todas las secciones primero
+            document.querySelectorAll('.section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Mostrar la sección solicitada
+            switch(sectionId) {
+                case 'welcome':
+                    document.getElementById('welcomeSection').style.display = 'block';
+                    break;
+                case 'agregarEmpresa':
+                    document.getElementById('agregarEmpresaSection').style.display = 'block';
+                    break;
+                case 'empresas':
+                    document.getElementById('empresasSection').style.display = 'block';
+                    cargarTablaEmpresas();
+                    break;
+                case 'facturas':
+                    document.getElementById('facturasSection').style.display = 'block';
+                    cargarEmpresasParaFactura();
+                    break;
+                case 'historial':
+                    document.getElementById('historialSection').style.display = 'block';
+                    cargarHistorialFacturas();
+                    break;
+                case 'ica':
+                    document.getElementById('icaSection').style.display = 'block';
+                    break;
+            }
+        }
+        
+        // Funciones para empresas
+        function agregarEmpresa() {
+            // Validar permisos
+            if (currentUser.role !== 'contador' && currentUser.role !== 'revisor') {
+                showMessage('empresaMsg', 'No tienes permisos para agregar empresas');
+                return;
+            }
+            
+            const nombre = document.getElementById('nombreEmpresa').value.trim();
+            const nit = document.getElementById('nitEmpresa').value.trim();
+            const ciudad = document.getElementById('ciudadEmpresa').value;
+            const actividad = document.getElementById('actividadEmpresa').value;
+            const regimen = document.getElementById('regimenEmpresa').value;
+            const direccion = document.getElementById('direccionEmpresa').value.trim();
+            const tarifaNacional = parseFloat(document.getElementById('tarifaNacional').value);
+            const tarifaTerritorial = parseFloat(document.getElementById('tarifaTerritorial').value);
+            const retenciones = parseFloat(document.getElementById('retenciones').value);
+            const autoretenciones = parseFloat(document.getElementById('autoretenciones').value);
+            
+            // Validaciones
+            if (!nombre || !nit || !ciudad || !actividad || !regimen || !direccion || 
+                isNaN(tarifaNacional) || isNaN(tarifaTerritorial) || isNaN(retenciones) || isNaN(autoretenciones)) {
+                showMessage('empresaMsg', 'Por favor complete todos los campos correctamente');
+                return;
+            }
+            
+            // Verificar si el NIT ya existe
+            if (empresas.some(e => e.nit === nit)) {
+                showMessage('empresaMsg', 'Ya existe una empresa con este NIT');
+                return;
+            }
+            
+            // Crear nueva empresa
+            const nuevaEmpresa = {
+                nit,
+                nombre,
+                ciudad,
+                actividad,
+                regimen,
+                direccion,
+                tarifaNacional,
+                tarifaTerritorial,
+                retenciones,
+                autoretenciones
+            };
+            
+            empresas.push(nuevaEmpresa);
+            localStorage.setItem('contable_empresas', JSON.stringify(empresas));
+            
+            // Limpiar formulario y mostrar mensaje de éxito
+            document.getElementById('nombreEmpresa').value = '';
+            document.getElementById('nitEmpresa').value = '';
+            document.getElementById('ciudadEmpresa').value = '';
+            document.getElementById('actividadEmpresa').value = '';
+            document.getElementById('regimenEmpresa').value = '';
+            document.getElementById('direccionEmpresa').value = '';
+            
+            showMessage('empresaMsg', 'Empresa agregada correctamente', false);
+            
+            // Actualizar listados
+            cargarEmpresasParaFactura();
+            cargarTablaEmpresas();
+        }
+        
+        function cargarEmpresasParaFactura() {
+            const select = document.getElementById('empresaFactura');
+            select.innerHTML = '<option value="" disabled selected>-- Seleccione una empresa --</option>';
+            
+            empresas.forEach(empresa => {
+                select.innerHTML += `<option value="${empresa.nit}">${empresa.nombre} (${empresa.nit})</option>`;
+            });
+        }
+        
+        function cargarTablaEmpresas() {
+            const tbody = document.getElementById('empresasTable').querySelector('tbody');
+            tbody.innerHTML = '';
+            
+            empresas.forEach(empresa => {
+                const tr = document.createElement('tr');
+                
+                tr.innerHTML = `
+                    <td>${empresa.nit}</td>
+                    <td>${empresa.nombre}</td>
+                    <td>${empresa.ciudad}</td>
+                    <td>${empresa.actividad}</td>
+                    <td>${empresa.regimen}</td>
+                    <td>
+                        <button onclick="verDetalleEmpresa('${empresa.nit}')" class="nav-button" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">Ver</button>
+                        ${currentUser.role === 'contador' || currentUser.role === 'revisor' ? 
+                          `<button onclick="editarEmpresa('${empresa.nit}')" class="nav-button" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">Editar</button>
+                           <button onclick="eliminarEmpresa('${empresa.nit}')" class="nav-button" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; background: #b22;">Eliminar</button>` : ''}
+                    </td>
+                `;
+                
+                tbody.appendChild(tr);
+            });
+        }
+        
+        function verDetalleEmpresa(nit) {
+            const empresa = empresas.find(e => e.nit === nit);
+            if (!empresa) return;
+            
+            alert(`Detalle de Empresa:\n\n` +
+                  `Nombre: ${empresa.nombre}\n` +
+                  `NIT: ${empresa.nit}\n` +
+                  `Ciudad: ${empresa.ciudad}\n` +
+                  `Actividad: ${empresa.actividad}\n` +
+                  `Régimen: ${empresa.regimen}\n` +
+                  `Dirección: ${empresa.direccion}\n` +
+                  `Tarifa Nacional: ${empresa.tarifaNacional}%\n` +
+                  `Tarifa Territorial: ${empresa.tarifaTerritorial}%\n` +
+                  `Retenciones: ${empresa.retenciones}%\n` +
+                  `Autoretenciones: ${empresa.autoretenciones}%`);
+        }
+        
+        function editarEmpresa(nit) {
+            if (currentUser.role !== 'contador' && currentUser.role !== 'revisor') {
+                alert('No tienes permisos para editar empresas');
+                return;
+            }
+            
+            const empresa = empresas.find(e => e.nit === nit);
+            if (!empresa) return;
+            
+            // Llenar el formulario con los datos de la empresa
+            document.getElementById('nombreEmpresa').value = empresa.nombre;
+            document.getElementById('nitEmpresa').value = empresa.nit;
+            document.getElementById('ciudadEmpresa').value = empresa.ciudad;
+            document.getElementById('actividadEmpresa').value = empresa.actividad;
+            document.getElementById('regimenEmpresa').value = empresa.regimen;
+            document.getElementById('direccionEmpresa').value = empresa.direccion;
+            document.getElementById('tarifaNacional').value = empresa.tarifaNacional;
+            document.getElementById('tarifaTerritorial').value = empresa.tarifaTerritorial;
+            document.getElementById('retenciones').value = empresa.retenciones;
+            document.getElementById('autoretenciones').value = empresa.autoretenciones;
+            
+            // Mostrar la sección de agregar empresa (que usaremos para editar)
+            showSection('agregarEmpresa');
+            
+            // Cambiar el botón para que actualice en lugar de agregar
+            const btn = document.querySelector('#agregarEmpresaSection button');
+            btn.textContent = 'Actualizar Empresa';
+            btn.onclick = function() { actualizarEmpresa(nit); };
+            
+            showMessage('empresaMsg', 'Editando empresa. Complete los cambios y haga clic en Actualizar.', false);
+        }
+        
+        function actualizarEmpresa(nit) {
+            const empresaIndex = empresas.findIndex(e => e.nit === nit);
+            if (empresaIndex === -1) return;
+            
+            // Obtener valores del formulario
+            const nombre = document.getElementById('nombreEmpresa').value.trim();
+            const ciudad = document.getElementById('ciudadEmpresa').value;
+            const actividad = document.getElementById('actividadEmpresa').value;
+            const regimen = document.getElementById('regimenEmpresa').value;
+            const direccion = document.getElementById('direccionEmpresa').value.trim();
+            const tarifaNacional = parseFloat(document.getElementById('tarifaNacional').value);
+            const tarifaTerritorial = parseFloat(document.getElementById('tarifaTerritorial').value);
+            const retenciones = parseFloat(document.getElementById('retenciones').value);
+            const autoretenciones = parseFloat(document.getElementById('autoretenciones').value);
+            
+            // Validaciones
+            if (!nombre || !ciudad || !actividad || !regimen || !direccion || 
+                isNaN(tarifaNacional) || isNaN(tarifaTerritorial) || isNaN(retenciones) || isNaN(autoretenciones)) {
+                showMessage('empresaMsg', 'Por favor complete todos los campos correctamente');
+                return;
+            }
+            
+            // Actualizar empresa
+            empresas[empresaIndex] = {
+                ...empresas[empresaIndex],
+                nombre,
+                ciudad,
+                actividad,
+                regimen,
+                direccion,
+                tarifaNacional,
+                tarifaTerritorial,
+                retenciones,
+                autoretenciones
+            };
+            
+            localStorage.setItem('contable_empresas', JSON.stringify(empresas));
+            
+            // Restaurar el formulario y el botón
+            const btn = document.querySelector('#agregarEmpresaSection button');
+            btn.textContent = 'Guardar Empresa';
+            btn.onclick = function() { agregarEmpresa(); };
+            
+            // Limpiar formulario
+            document.getElementById('nombreEmpresa').value = '';
+            document.getElementById('nitEmpresa').value = '';
+            document.getElementById('ciudadEmpresa').value = '';
+            document.getElementById('actividadEmpresa').value = '';
+            document.getElementById('regimenEmpresa').value = '';
+            document.getElementById('direccionEmpresa').value = '';
+            
+            showMessage('empresaMsg', 'Empresa actualizada correctamente', false);
+            
+            // Actualizar listados
+            cargarEmpresasParaFactura();
+            cargarTablaEmpresas();
+            
+            // Volver a la lista de empresas
+            showSection('empresas');
+        }
+        
+        function eliminarEmpresa(nit) {
+            if (currentUser.role !== 'contador' && currentUser.role !== 'revisor') {
+                alert('No tienes permisos para eliminar empresas');
+                return;
+            }
+            
+            if (!confirm('¿Está seguro que desea eliminar esta empresa? Esta acción no se puede deshacer.')) {
+                return;
+            }
+            
+            empresas = empresas.filter(e => e.nit !== nit);
+            localStorage.setItem('contable_empresas', JSON.stringify(empresas));
+            
+            // Actualizar listados
+            cargarEmpresasParaFactura();
+            cargarTablaEmpresas();
+            
+            showMessage('empresaMsg', 'Empresa eliminada correctamente', false);
+        }
+        
+        // Funciones para facturas
+        function generarFactura() {
+            // Validar permisos
+            if (currentUser.role === 'invitado') {
+                alert('No tienes permisos para generar facturas');
+                return;
+            }
+            
+            const nitEmpresa = document.getElementById('empresaFactura').value;
+            const valorVenta = parseFloat(document.getElementById('valorVenta').value);
+            const concepto = document.getElementById('conceptoFactura').value.trim();
+            
+            // Validaciones
+            if (!nitEmpresa) {
+                alert('Seleccione una empresa');
+                return;
+            }
+            
+            if (isNaN(valorVenta) || valorVenta <= 0) {
+                alert('Ingrese un valor de venta válido');
+                return;
+            }
+            
+            if (!concepto) {
+                alert('Ingrese un concepto para la factura');
+                return;
+            }
+            
+            const empresa = empresas.find(e => e.nit === nitEmpresa);
+            if (!empresa) {
+                alert('Empresa no encontrada');
+                return;
+            }
+            
+            // Cálculos tributarios
+            const iva = valorVenta * (empresa.tarifaNacional / 100);
+            const retencionIVA = iva * (empresa.retenciones / 100);
+            const retencionFuente = valorVenta * (empresa.retenciones / 100);
+            const autoretencion = empresa.regimen === 'Especial' ? valorVenta * (empresa.autoretenciones / 100) : 0;
+            
+            // Calcular ICA según ciudad y actividad
+            const tarifaICA = tarifasICA[empresa.ciudad]?.[empresa.actividad] || 0;
+            const ica = valorVenta * (tarifaICA / 100);
+            
+            // Calcular total
+            const totalFactura = valorVenta + iva - retencionIVA - retencionFuente - autoretencion + ica;
+            
+            // Crear factura
+            const nuevaFactura = {
+                id: Date.now().toString(),
+                fecha: new Date(),
+                nitEmpresa: empresa.nit,
+                nombreEmpresa: empresa.nombre,
+                ciudadEmpresa: empresa.ciudad,
+                actividadEmpresa: empresa.actividad,
+                regimenEmpresa: empresa.regimen,
+                concepto,
+                valorVenta,
+                iva,
+                retencionIVA,
+                retencionFuente,
+                autoretencion,
+                ica,
+                totalFactura,
+                usuario: currentUser.user
+            };
+            
+            facturas.push(nuevaFactura);
+            localStorage.setItem('contable_facturas', JSON.stringify(facturas));
+            
+            // Mostrar resultado
+            mostrarResultadoFactura(nuevaFactura);
+            
+            // Actualizar historial
+            cargarHistorialFacturas();
+        }
+        
+        function mostrarResultadoFactura(factura) {
+            const facturaResult = document.getElementById('facturaResult');
+            facturaResult.style.display = 'block';
+            
+            // Formatear valores con separadores de miles
+            const formatCOP = (value) => {
+                return new Intl.NumberFormat('es-CO', {
+                    style: 'currency',
+                    currency: 'COP',
+                    minimumFractionDigits: 0
+                }).format(value);
+            };
+            
+            facturaResult.innerHTML = `
+                <h3>Factura Generada</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <p><strong>Número:</strong> ${factura.id}</p>
+                        <p><strong>Fecha:</strong> ${factura.fecha.toLocaleString()}</p>
+                        <p><strong>Empresa:</strong> ${factura.nombreEmpresa} (${factura.nitEmpresa})</p>
+                    </div>
+                    <div class="form-group">
+                        <p><strong>Ciudad:</strong> ${factura.ciudadEmpresa}</p>
+                        <p><strong>Actividad:</strong> ${factura.actividadEmpresa}</p>
+                        <p><strong>Régimen:</strong> ${factura.regimenEmpresa}</p>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <p><strong>Concepto:</strong> ${factura.concepto}</p>
+                    </div>
+                </div>
+                
+                <h4>Detalle Tributario</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Concepto</th>
+                            <th>Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Valor Venta</td>
+                            <td>${formatCOP(factura.valorVenta)}</td>
+                        </tr>
+                        <tr>
+                            <td>IVA (${factura.iva > 0 ? (factura.iva / factura.valorVenta * 100).toFixed(2) : '0'}%)</td>
+                            <td>${formatCOP(factura.iva)}</td>
+                        </tr>
+                        <tr>
+                            <td>Retención IVA</td>
+                            <td>-${formatCOP(factura.retencionIVA)}</td>
+                        </tr>
+                        <tr>
+                            <td>Retención Fuente</td>
+                            <td>-${formatCOP(factura.retencionFuente)}</td>
+                        </tr>
+                        <tr>
+                            <td>Autoretención</td>
+                            <td>-${formatCOP(factura.autoretencion)}</td>
+                        </tr>
+                        <tr>
+                            <td>ICA (${(factura.ica / factura.valorVenta * 100).toFixed(2)}%)</td>
+                            <td>${formatCOP(factura.ica)}</td>
+                        </tr>
+                        <tr style="font-weight: bold; background: #f5f9ff;">
+                            <td>TOTAL A PAGAR</td>
+                            <td>${formatCOP(factura.totalFactura)}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <button onclick="exportarFacturaPDF('${factura.id}')" style="margin-top: 1rem;">Exportar a PDF</button>
+            `;
+        }
+        
+        function cargarHistorialFacturas() {
+            const tbody = document.getElementById('historialTable').querySelector('tbody');
+            tbody.innerHTML = '';
+            
+            // Ordenar facturas por fecha (más recientes primero)
+            const facturasOrdenadas = [...facturas].sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+            
+            // Formatear valores con separadores de miles
+            const formatCOP = (value) => {
+                return new Intl.NumberFormat('es-CO', {
+                    style: 'currency',
+                    currency: 'COP',
+                    minimumFractionDigits: 0
+                }).format(value);
+            };
+            
+            facturasOrdenadas.forEach(factura => {
+                const tr = document.createElement('tr');
+                
+                tr.innerHTML = `
+                    <td>${factura.fecha.toLocaleDateString()}</td>
+                    <td>${factura.nombreEmpresa}</td>
+                    <td>${factura.ciudadEmpresa}</td>
+                    <td>${formatCOP(factura.valorVenta)}</td>
+                    <td>${formatCOP(factura.totalFactura)}</td>
+                    <td>
+                        <button onclick="verDetalleFactura('${factura.id}')" class="nav-button" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">Detalle</button>
+                    </td>
+                `;
+                
+                tbody.appendChild(tr);
+            });
+        }
+        
+        function verDetalleFactura(id) {
+            const factura = facturas.find(f => f.id === id);
+            if (!factura) return;
+            
+            // Formatear valores con separadores de miles
+            const formatCOP = (value) => {
+                return new Intl.NumberFormat('es-CO', {
+                    style: 'currency',
+                    currency: 'COP',
+                    minimumFractionDigits: 0
+                }).format(value);
+            };
+            
+            // Crear modal para mostrar el detalle
+            const modal = document.createElement('div');
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100%';
+            modal.style.height = '100%';
+            modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+            modal.style.display = 'flex';
+            modal.style.justifyContent = 'center';
+            modal.style.alignItems = 'center';
+            modal.style.zIndex = '1000';
+            
+            const modalContent = document.createElement('div');
+            modalContent.style.backgroundColor = 'white';
+            modalContent.style.padding = '2rem';
+            modalContent.style.borderRadius = '8px';
+            modalContent.style.maxWidth = '800px';
+            modalContent.style.width = '90%';
+            modalContent.style.maxHeight = '90vh';
+            modalContent.style.overflowY = 'auto';
+            
+            modalContent.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h2>Detalle de Factura #${factura.id}</h2>
+                    <button onclick="this.parentElement.parentElement.parentElement.remove()" style="background: #b22; padding: 0.5rem 1rem;">Cerrar</button>
+                </div>
+                
+                <div style="display: flex; flex-wrap: wrap; gap: 2rem; margin-bottom: 1.5rem;">
+                    <div>
+                        <p><strong>Fecha:</strong> ${factura.fecha.toLocaleString()}</p>
+                        <p><strong>Empresa:</strong> ${factura.nombreEmpresa} (${factura.nitEmpresa})</p>
+                        <p><strong>Ciudad:</strong> ${factura.ciudadEmpresa}</p>
+                    </div>
+                    <div>
+                        <p><strong>Actividad:</strong> ${factura.actividadEmpresa}</p>
+                        <p><strong>Régimen:</strong> ${factura.regimenEmpresa}</p>
+                        <p><strong>Generada por:</strong> ${factura.usuario}</p>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <p><strong>Concepto:</strong></p>
+                    <p>${factura.concepto}</p>
+                </div>
+                
+                <h3 style="margin-bottom: 1rem;">Detalle Tributario</h3>
+                <table style="width: 100%; margin-bottom: 1.5rem;">
+                    <thead>
+                        <tr>
+                            <th>Concepto</th>
+                            <th>Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Valor Venta</td>
+                            <td>${formatCOP(factura.valorVenta)}</td>
+                        </tr>
+                        <tr>
+                            <td>IVA (${factura.iva > 0 ? (factura.iva / factura.valorVenta * 100).toFixed(2) : '0'}%)</td>
+                            <td>${formatCOP(factura.iva)}</td>
+                        </tr>
+                        <tr>
+                            <td>Retención IVA</td>
+                            <td>-${formatCOP(factura.retencionIVA)}</td>
+                        </tr>
+                        <tr>
+                            <td>Retención Fuente</td>
+                            <td>-${formatCOP(factura.retencionFuente)}</td>
+                        </tr>
+                        <tr>
+                            <td>Autoretención</td>
+                            <td>-${formatCOP(factura.autoretencion)}</td>
+                        </tr>
+                        <tr>
+                            <td>ICA (${(factura.ica / factura.valorVenta * 100).toFixed(2)}%)</td>
+                            <td>${formatCOP(factura.ica)}</td>
+                        </tr>
+                        <tr style="font-weight: bold; background: #f5f9ff;">
+                            <td>TOTAL A PAGAR</td>
+                            <td>${formatCOP(factura.totalFactura)}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <button onclick="exportarFacturaPDF('${factura.id}')" style="margin-top: 1rem;">Exportar a PDF</button>
+            `;
+            
+            modal.appendChild(modalContent);
+            document.body.appendChild(modal);
+        }
+        
+        function exportarFacturaPDF(id) {
+            alert('Funcionalidad de exportar a PDF en desarrollo. Se implementaría con una librería como jsPDF o generando un PDF en el servidor.');
+        }
+        
+        // Funciones para ICA
+        function calcularICAPorCiudad() {
+            const ciudad = document.getElementById('selectCiudadICA').value;
+            if (!ciudad) return;
+            
+            document.getElementById('ciudadSeleccionada').textContent = ciudad;
+            
+            // Filtrar empresas por ciudad
+            const empresasCiudad = empresas.filter(e => e.ciudad === ciudad);
+            
+            // Filtrar facturas por empresas de esa ciudad
+            const facturasCiudad = facturas.filter(f => {
+                return empresasCiudad.some(e => e.nit === f.nitEmpresa);
+            });
+            
+            // Calcular total ICA por empresa
+            const icaPorEmpresa = {};
+            empresasCiudad.forEach(empresa => {
+                const facturasEmpresa = facturasCiudad.filter(f => f.nitEmpresa === empresa.nit);
+                const totalICA = facturasEmpresa.reduce((sum, f) => sum + f.ica, 0);
+                icaPorEmpresa[empresa.nit] = {
+                    nombre: empresa.nombre,
+                    totalICA,
+                    facturas: facturasEmpresa.length
+                };
+            });
+            
+            // Mostrar resultados
+            const icaEmpresasDiv = document.getElementById('icaEmpresas');
+            icaEmpresasDiv.innerHTML = `
+                <h4>Empresas en ${ciudad}</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Empresa</th>
+                            <th>NIT</th>
+                            <th>Facturas</th>
+                            <th>Total ICA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${Object.entries(icaPorEmpresa).map(([nit, data]) => `
+                            <tr>
+                                <td>${data.nombre}</td>
+                                <td>${nit}</td>
+                                <td>${data.facturas}</td>
+                                <td>${formatCOP(data.totalICA)}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            // Mostrar facturas
+            const icaFacturasDiv = document.getElementById('icaFacturas');
+            icaFacturasDiv.innerHTML = `
+                <h4>Facturas en ${ciudad}</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Empresa</th>
+                            <th>Concepto</th>
+                            <th>Valor Venta</th>
+                            <th>ICA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${facturasCiudad.map(factura => `
+                            <tr>
+                                <td>${factura.fecha.toLocaleDateString()}</td>
+                                <td>${factura.nombreEmpresa}</td>
+                                <td>${factura.concepto}</td>
+                                <td>${formatCOP(factura.valorVenta)}</td>
+                                <td>${formatCOP(factura.ica)}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+        
+        // Función auxiliar para formatear valores en COP
+        function formatCOP(value) {
+            return new Intl.NumberFormat('es-CO', {
+                style: 'currency',
+                currency: 'COP',
+                minimumFractionDigits: 0
+            }).format(value);
+        }
+        
+        // Configurar evento para calcular ICA al seleccionar ciudad
+        document.getElementById('selectCiudadICA').addEventListener('change', calcularICAPorCiudad);
+    </script>
+</body>
+</html>
