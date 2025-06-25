@@ -1,0 +1,147 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "username": "admin",
+      "password": "password",
+      "role": "contador"
+    },
+    {
+      "id": "8613",
+      "user": "admin2",
+      "pass": "admin2",
+      "role": "contador"
+    }
+  ],
+  "empresas": [
+    {
+      "id": "a5fc",
+      "nit": "12345678-3",
+      "nombre": "Tecnoglass",
+      "ciudad": "Cali",
+      "actividad": "Comercio",
+      "regimen": "Simplificado",
+      "direccion": "cra 26#76b-47",
+      "tarifaNacional": 19,
+      "tarifaTerritorial": 10,
+      "retenciones": 3.5,
+      "autoretenciones": 1
+    },
+    {
+      "id": "0fff",
+      "nit": "123452344-6",
+      "nombre": "Sisas",
+      "ciudad": "Barranquilla",
+      "actividad": "Comercio",
+      "regimen": "Simplificado",
+      "direccion": "paseo bolivar",
+      "tarifaNacional": 19,
+      "tarifaTerritorial": 10,
+      "retenciones": 3.5,
+      "autoretenciones": 1
+    }
+  ],
+  "facturas": [
+    {
+      "id": "1750821070508",
+      "fecha": "2025-06-25T03:11:10.508Z",
+      "nitEmpresa": "12345678-3",
+      "nombreEmpresa": "Tecnoglass",
+      "ciudadEmpresa": "Cali",
+      "actividadEmpresa": "Comercio",
+      "regimenEmpresa": "Simplificado",
+      "concepto": "venta de vidrios",
+      "valorVenta": 1200000,
+      "iva": 228000,
+      "retencionIVA": 7980.000000000001,
+      "retencionFuente": 42000.00000000001,
+      "autoretencion": 0,
+      "ica": 0,
+      "totalFactura": 1378020,
+      "usuario": "admin2"
+    },
+    {
+      "id": "1750821601467",
+      "fecha": "2025-06-25T03:20:01.467Z",
+      "nitEmpresa": "123452344-6",
+      "nombreEmpresa": "Sisas",
+      "ciudadEmpresa": "Barranquilla",
+      "actividadEmpresa": "Comercio",
+      "regimenEmpresa": "Simplificado",
+      "concepto": "Venta de salchipapa",
+      "valorVenta": 5000000,
+      "iva": 950000,
+      "retencionIVA": 33250,
+      "retencionFuente": 175000.00000000003,
+      "autoretencion": 0,
+      "ica": 0,
+      "totalFactura": 5741750,
+      "usuario": "admin2"
+    },
+    {
+      "id": "1750822030027",
+      "fecha": "2025-06-25T03:27:10.027Z",
+      "nitEmpresa": "123452344-6",
+      "nombreEmpresa": "Sisas",
+      "ciudadEmpresa": "Barranquilla",
+      "actividadEmpresa": "Comercio",
+      "regimenEmpresa": "Simplificado",
+      "concepto": "Venta de carne",
+      "valorVenta": 6000000,
+      "iva": 1140000,
+      "retencionIVA": 39900.00000000001,
+      "retencionFuente": 210000.00000000003,
+      "autoretencion": 0,
+      "ica": 0,
+      "totalFactura": 6890100,
+      "usuario": "admin2"
+    }
+  ],
+  "tarifasICA": [
+    {
+      "ciudad": "Barranquilla",
+      "Comercio": 0.7,
+      "Servicios": 1,
+      "Industria": 0.5
+    },
+    {
+      "ciudad": "Medellín",
+      "Comercio": 0.8,
+      "Servicios": 1.2,
+      "Industria": 0.6
+    },
+    {
+      "ciudad": "Cali",
+      "Comercio": 0.75,
+      "Servicios": 1.1,
+      "Industria": 0.55
+    },
+    {
+      "id": "41de",
+      "ciudad": "Amazonas",
+      "tarifas": {
+        "Comercio": 1,
+        "Servicios": 2,
+        "Industria": 3
+      }
+    },
+    {
+      "id": "c521",
+      "ciudad": "Riohacha",
+      "tarifas": {
+        "Comercio": 2,
+        "Servicios": 19,
+        "Industria": 5
+      }
+    },
+    {
+      "id": "b660",
+      "ciudad": "Bogotá",
+      "tarifas": {
+        "Comercio": 10,
+        "Servicios": 19,
+        "Industria": 5
+      }
+    }
+  ]
+}
